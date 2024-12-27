@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "zod": "^3.24.1"
+  },
+  "name": "task2",
+  "version": "1.0.0",
+  "description": "This is the task 2 of level1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Farhan Khan",
+  "license": "ISC"
+}
