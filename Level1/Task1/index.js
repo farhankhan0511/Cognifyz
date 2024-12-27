@@ -1,6 +1,11 @@
 import express from "express"
 import cors from "cors"
 import bodyParser from "body-parser";
+import path from "path"
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app=express();
 app.use(cors(
     // {
@@ -10,12 +15,16 @@ app.use(cors(
 ));
 app.use(bodyParser.json())
 const port=3001;
-
+app.set("view engine","ejs");
+app.set("views", path.join(__dirname, "views"));
+app.get("/", (req, res) => {
+	res.render("form", { title: "Dynamic Form Submission" });
+});
 app.post("/submit",(req,res)=>{
 
     const {name,email}=req.body;
     console.log(`Received form submission: Name - ${name}, Email - ${email}`);
-    res.status(200).send("Form submitted successfully!");
+    res.status(200).json({name:name,email:email});
 });
 
 try {

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title><%= title || "Form Submission" %></title>
+		<script src="https://cdn.tailwindcss.com"></script>
+	</head>
+
+	<body class="bg-gray-600 flex items-center justify-center min-h-screen">
+		<div id="form-container" class="w-full max-w-sm">
+			<form
+				id="myForm"
+				class="bg-gray-200 p-6 rounded shadow-md"
+			>
+				<div class="mb-4">
+					<label for="name" class="block text-gray-700 font-bold mb-2"
+						>Name:</label
+					>
+					<input
+						type="text"
+						id="name"
+						name="name"
+						required
+						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+						placeholder="Enter your name"
+					/>
+				</div>
+				<div class="mb-4">
+					<label
+						for="email"
+						class="block text-gray-700 font-bold mb-2"
+						>Email:</label
+					>
+					<input
+						type="email"
+						id="email"
+						name="email"
+						required
+						class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+						placeholder="Enter your email"
+					/>
+				</div>
+				<button
+					type="submit"
+					class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+				>
+					Submit
+				</button>
+			</form>
+		</div>
+
+		<script>
+			document.getElementById("myForm").addEventListener("submit", async function (event) {
+				event.preventDefault();
+
+				const formData = {
+					name: document.getElementById("name").value,
+					email: document.getElementById("email").value,
+				};
+
+				try {
+					const response = await fetch("http://localhost:3001/submit", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(formData),
+					});
+
+					if (response.ok) {
+						const data = await response.json();
+						// Dynamically render response
+						document.getElementById("form-container").innerHTML = `
+							<div class="bg-green-200 p-6 rounded shadow-md text-center">
+								<h2 class="text-xl font-bold text-green-800">Form Submitted Successfully!</h2>
+								<p class="text-gray-700 mt-2">Thank you, <span class="font-bold">${data.name}</span>.</p>
+								<p class="text-gray-700">We've received your email: <span class="font-bold">${data.email}</span>.</p>
+								<button 
+									class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+									onclick="location.reload()"
+								>
+									Submit Another Response
+								</button>
+							</div>
+						`;
+					} else {
+						alert("Failed to submit form.");
+					}
+				} catch (error) {
+					console.error("Error:", error);
+					// alert("An error occurred while submitting the form.");
+				}
+			});
+		</script>
+	</body>
+</html>
