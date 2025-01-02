@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced CSS Styling with Images</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Additional custom CSS for animations */
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .rotate {
+      animation: rotate 1s linear infinite;
+    }
+    @keyframes rotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <!-- Header Section -->
+  <header class="bg-gradient-to-r from-blue-500 to-green-500 text-white py-5 text-center">
+    <h1 class="text-4xl font-bold">Advanced CSS Styling with Images</h1>
+    <p class="mt-2 text-lg">Responsive and Animated Webpage</p>
+  </header>
+
+  <!-- Main Content -->
+  <main class="p-6">
+    <!-- Section 1: Responsive Images -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4">Responsive Image Gallery</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <img src="image1.png" alt="Image 1" class="w-full h-52 object-cover rounded-lg shadow-md">
+        <img src="image2.png" alt="Image 2" class="w-full h-52 object-cover rounded-lg shadow-md">
+        <img src="image3.png" alt="Image 3" class="w-full h-52 object-cover rounded-lg shadow-md">
+        <img src="image.png" alt="Image 4" class="w-full h-52 object-cover rounded-lg shadow-md">
+      </div>
+    </section>
+
+    <!-- Section 2: Animation Showcase -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4">CSS Animations</h2>
+      <div class="flex gap-4">
+        <button onclick="startFadeAnimation()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+          Start Fade-in
+        </button>
+        <button onclick="startRotateAnimation()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+          Start Rotate
+        </button>
+      </div>
+      <div class="mt-6 flex gap-4">
+        <img id="fade-image" src="image.png" alt="Fade Animation" class="w-40 h-40 object-cover rounded">
+        <img id="rotate-image" src="image.png" alt="Rotate Animation" class="w-40 h-40 object-cover rounded">
+      </div>
+    </section>
+
+    <!-- Section 3: Gradient Showcase -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-semibold mb-4">Gradient Example</h2>
+      <button id="gradient-btn" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded hover:from-pink-500 hover:to-purple-500 transition duration-300">
+        Hover for Gradient Change
+      </button>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center py-4">
+    <p>&copy; 2025 Advanced CSS Project</p>
+  </footer>
+
+  <script>
+    function startFadeAnimation() {
+      const fadeImage = document.getElementById('fade-image');
+      fadeImage.classList.remove('fade-in');
+      void fadeImage.offsetWidth; // Reset animation
+      fadeImage.classList.add('fade-in');
+    }
+
+    function startRotateAnimation() {
+      const rotateImage = document.getElementById('rotate-image');
+      rotateImage.classList.toggle('rotate');
+    }
+  </script>
+</body>
+</html>
