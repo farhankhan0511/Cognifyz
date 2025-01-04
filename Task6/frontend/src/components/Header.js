@@ -1,48 +1,42 @@
-import React, { useRef } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { addUser,removeUser } from '../utils/userSlice';
-import { useEffect } from 'react';
-import { logo,useravatar } from '../utils/constant';
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {Get} from "../utils/Get.js"
+import {url} from "../utils/constant.js"
+import { removeUser } from '../utils/userSlice'
+import { useNavigate } from 'react-router-dom'
+
 
 const Header = () => {
-  const navigate=useNavigate()
-  const dispatch =useDispatch()
-  const lang=useRef()
-  const user=useSelector((store)=>store?.user)
-  
- 
-
-  const handlesignout=()=>{
+    const dispatch=useDispatch()
+    const user=useSelector((store)=>store?.user)
+    const navigate=useNavigate()
     
-  }
 
+    const handleadmindashboard=()=>{
 
+    }
+    const handleAuth=()=>{
+        if(user){
+            const handlelogout=async()=>{const logout=async()=>{let data=await Get(url+"user/logout")}; logout();}
+            handlelogout()
+            dispatch(removeUser())
+            navigate("/browse")
+        }
+        else{
+            navigate("/signin")
+        }
+    }
 
-
-
-
-  useEffect(()=>{
-    
-},[])
   return (
-    <div className='z-20 absolute top-0  px-8 py-2 bg-gradient-to-b from-black w-full flex justify-between'>
-        <img  className="w-28 md:w-44" src={logo} alt="Logo"/>
-     
-     {user && ( 
-          
-     <div className='flex'>
-
-     
-
-    <img className='hidden md:block w-12 h-12 m-2' alt='user logo' src={useravatar}/>
-    <button onClick={handlesignout} className='font-bold text-white md:font-medium'>Sign Out</button>
+    <div className=' flex  w-full py-[2%]  bg-black bg-gradient-to-r justify-between'>
+        <h1 className='ml-3 text-xl font-bold text-white'>Travel Agency Booking System</h1>
+        <div className='flex justify-around px-4'>
+            
+    {user?.isadmin && <button className='text-white mx-2' onClick={handleadmindashboard}>Dashboard</button>
+    }
+    <button className='text-white mx-2' onClick={handleAuth}>{user?"Signout":"Signup"}</button>
+        </div>
     </div>
-     )
-
-     }
-      
-    </div>  
   )
 }
 

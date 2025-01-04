@@ -1,116 +1,256 @@
-import React, { useState,useRef } from 'react'
-import Header from './Header'
-import { checkvalidData } from '../utils/validate';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { z } from 'zod';
+import { toFormikValidationSchema } from 'zod-formik-adapter';
+import { Post } from '../utils/Post';
+import { url } from '../utils/constant';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../utils/userSlice';
-import { backimg } from '../utils/constant';
+import { useNavigate } from 'react-router-dom';
+import { addaccesstoken } from '../utils/accesstokenSlice';
 
+const SignInSignUpForm = () => {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [userType, setUserType] = useState('user');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  // API Call for Sign Up
+  const signup = async (url, values) => {
+    const data = await Post(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    });
 
-const Login = () => {
-  const dispatch=useDispatch()
-  const navigate=useNavigate()
-  const [isSignin,setisSignin]=useState(true);
-  const [errormsg,seterrormsg]=useState(null)
-const togglesignin=()=>{
-  setisSignin(!isSignin)
-}
-const email=useRef(null);
-const password=useRef(null);
-const fullname=useRef(null);
+    if (!data) {
+      throw new Error('Error in Signing up');
+    }
+    console.log(data);
+    dispatch(addUser(data?.data?.user));
+    navigate('/browse');
+  };
 
+  // API Call for Sign In
+  const signin = async (url, values) => {
+    const data = await Post(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
+    });
 
-const handlebuttonclick=()=>{
-let message=checkvalidData(email.current.value,password.current.value)
-  seterrormsg(message)
-  if (message) return
-  //sign in or sign up
+    if (!data) {
+      throw new Error('Error in Signing in');
+    }
+    console.log(data);
+    dispatch(addUser(data?.data?.user));
+    dispatch(addaccesstoken(data?.data?.accesstoken))
+    navigate('/browse');
+  };
 
-  if(!isSignin){
-    //signup
-   
-// createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
-// .then((userCredential)=>{
-//   const user =userCredential.user;
-//   console.log(user)
-//   updateProfile(user,{
-//     displayName:fullname.current.value,
+  // Initial values for the form
+  const initialValues = {
+    Name: '',       // Fixed to match the name attribute
+    username: '',
+    email: '',
+    password: '',
+    isadmin: false,
+  };
 
-//   })
-//   .then(()=>{
-//     const {uid,email,displayName}=auth.currentUser;
-//     dispatch(addUser({
-//       uid:uid,email:email,displayName:displayName
-//     }))
-//     navigate("/browse")
-//   }) 
+  // Validation schemas for Sign In and Sign Up
+  const signUpSchema = z.object({
+    Name: z.string().nonempty('Name is required'), // Fixed field name
+    username: z.string().nonempty('Username is required'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    isadmin: z.boolean(),
+  });
 
-// })
+  const signInSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+  });
 
-// .catch((error)=>{
-//   const errorcode=error.code;
-//   const errormessage=error.message;
+  const validationSchema = isSignUp ? signUpSchema : signInSchema;
 
-//   seterrormsg(errorcode +"-"+errormessage)
-  
-// })
-  }
-  else{
-//sign in logic
-// signInWithEmailAndPassword(auth, email.current.value, password.current.value)
-// .then((userCredential)=>{
-//   const user =userCredential.user;
-  
- 
-  
+  // Handle form submission
+  const handleSubmit = (values, { resetForm }) => {
+    console.log(values);
+    isSignUp
+      ? signup(url + 'user/signup', values)
+      : signin(url + 'user/signin', values);
 
-// })
-// .catch((error)=>{
-//   const errorcode=error.code;
-//   const errormessage=error.message;
-  
-//   seterrormsg(errorcode +"-"+errormessage)
-// })
-  }
-
-
-
-}
+    resetForm();
+  };
 
   return (
-    <div>
-        <Header/>
-        <div className='absolute '>
-            <img  className=" object-cover h-screen md:h-auto md:bg-fixed" src={backimg} alt="background-img"/>
-        </div>
+    <div className="max-w-md mx-auto p-6 bg-white rounded shadow-md">
+      <h2 className="text-2xl font-bold text-center mb-4">
+        {isSignUp ? 'Sign Up' : 'Sign In'}
+      </h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={toFormikValidationSchema(validationSchema)}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting, setFieldValue }) => (
+          <Form className="space-y-4">
+            {isSignUp && (
+              <>
+                {/* User Type Dropdown */}
+                <div>
+                  <label
+                    htmlFor="userType"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    User Type
+                  </label>
+                  <select
+                    id="userType"
+                    name="userType"
+                    value={userType}
+                    onChange={(e) => {
+                      setUserType(e.target.value);
+                      setFieldValue('isadmin', e.target.value === 'admin');
+                    }}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
 
-        <form  onSubmit={(e)=>e.preventDefault()} className='p-12 bg-opacity-80 bg-black absolute  w-full md:w-3/12 my-40 mx-auto  right-0 left-0 text-white'>
+                {/* Full Name Field */}
+                <div>
+                  <label
+                    htmlFor="Name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Name
+                  </label>
+                  <Field
+                    type="text"
+                    name="Name" // Matches the key in initialValues
+                    placeholder="Enter name"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                  <ErrorMessage
+                    name="Name"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
 
-        <h1 className='text-2xl  m-2 p-4 '>{isSignin? "Sign In ": "Sign Up"}</h1>
-      
-      <input type="email"  name='email'
-      ref={email} placeholder='Email Address' className='p-2 m-2 w-full rounded-md bg-gray-700' required/>
+                {/* Username Field */}
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Username
+                  </label>
+                  <Field
+                    type="text"
+                    name="username"
+                    placeholder="Enter username"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  />
+                  <ErrorMessage
+                    name="username"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
 
-      {
-        !isSignin && (<input type="text"   ref={fullname} name="fullname" placeholder='Full Name' className='p-2 m-2 w-full bg-gray-700 rounded-md'/>)
-      }
+                {/* Admin Checkbox */}
+                {userType === 'admin' && (
+                  <div className="flex items-center">
+                    <Field
+                      type="checkbox"
+                      name="isadmin"
+                      id="isadmin"
+                      className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    />
+                    <label
+                      htmlFor="isadmin"
+                      className="ml-2 block text-sm text-gray-700"
+                    >
+                      Are you an admin?
+                    </label>
+                  </div>
+                )}
+              </>
+            )}
 
-      <input type="password" 
-      ref={password} name="password"
-      placeholder='Password' className='p-2 m-2 w-full bg-gray-700 rounded-md' required/>
+            {/* Email Field */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email
+              </label>
+              <Field
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-{errormsg && <p className='p-2 text-lg font-bold text-red-600'>{errormsg}</p>}
+            {/* Password Field */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <Field
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <ErrorMessage
+                name="password"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
-      <button onClick={handlebuttonclick} className=" bg-red-700 p-4 m-2  w-full">{isSignin? "Sign In ": "Sign Up"}</button>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {isSignUp ? 'Sign Up' : 'Sign In'}
+            </button>
+          </Form>
+        )}
+      </Formik>
 
-      
-
-      <p onClick={togglesignin} className='cursor-pointer'>{isSignin? "New to Netflix? Signup Now ": "Already a User Sign In Now"} </p>
-    </form> 
+      {/* Toggle Form Type */}
+      <button
+        className="w-full mt-4 text-indigo-600 hover:underline text-center"
+        onClick={() => setIsSignUp((prev) => !prev)}
+      >
+        {isSignUp
+          ? 'Already have an account? Sign In'
+          : "Don't have an account? Sign Up"}
+      </button>
     </div>
-    
-  )
-}
+  );
+};
 
-export default Login
+export default SignInSignUpForm;

@@ -1,24 +1,24 @@
 import React from 'react'
-import Header from './Header'
-import useNowplaying from '../Hooks/useNowplaying'
-import MainContainer from './MainContainer';
-import SecondaryContainer from './SecondaryContainer';
-
-import { useSelector } from 'react-redux';
+import { useTourPackage } from '../Hooks/useTourPackages'
+import { useSelector } from 'react-redux'
+import TourCardComponent from './TourCardComponent'
 
 const Browse = () => {
-  useNowplaying();
-  let show=useSelector((store)=>store?.GptSearch?.ShowGptSearch)
-  return (
-    <div className='bg-gray-950'>
-      <Header/>      
-     
-      
-         <MainContainer/>
-         <SecondaryContainer/>
-      
+    useTourPackage();
+    let Tourpackages=useSelector((store)=>store?.allpackages);
 
-      
+
+  return (
+    <div className='grid grid-cols-12 m-2'>
+        {
+            Tourpackages?.map((tour,index)=>(
+                <div className='col-span-3' key={index} >
+
+                  {  tour?.isPublic && <TourCardComponent tour={tour} />}
+                </div>
+                
+            ))
+        }
     </div>
   )
 }

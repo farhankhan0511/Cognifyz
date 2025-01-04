@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./userSlice"
-import movieReducer from "./movieSlice"
+import allpackagesReducer from "./AllPackagesSlice"
+import tobookReducer from "./tobookSlice"
+import accesstokenReducer from "./accesstokenSlice"
+
 const appstore=configureStore({
     reducer:{
         user:userReducer,
-        movies:movieReducer,
+        allpackages:allpackagesReducer,
+        tobook:tobookReducer,
+        accesstoken:accesstokenReducer
        
     }
 })

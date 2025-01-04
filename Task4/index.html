@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillUp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>SkillUp: Personalized Learning Platform</h1>
+        <nav>
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#profile" class="nav-link">Profile</a>
+        </nav>
+    </header>
+
+    <main id="app">
+        <section id="home" class="view">
+            <h2>Welcome to SkillUp</h2>
+            <p>Register or log in to start learning new skills today!</p>
+            <button id="registerBtn">Register</button>
+            <button id="loginBtn">Login</button>
+        </section>
+
+        <section id="skills" class="view hidden">
+            <h2>Select Your Skills</h2>
+            <label for="category">Choose a category:</label>
+            <select id="category">
+                <option value="">--Select--</option>
+                <option value="webdev">Web Development</option>
+                <option value="datasci">Data Science</option>
+                <option value="ai">Artificial Intelligence</option>
+            </select>
+            <div id="subtopics"></div>
+        </section>
+
+        <section id="profile" class="view hidden">
+            <h2>Your Profile</h2>
+            <p id="profileInfo">You are not logged in.</p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
